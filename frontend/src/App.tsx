@@ -201,16 +201,24 @@ export const App: React.FC = () => {
         status={factoryState.status}
       />
 
-      {/* Main Two-Column Dashboard Layout */}
+      {/* Machine Asset Status Strip */}
+      <MachineGrid
+        machines={factoryState.machines}
+        schedule={factoryState.schedule}
+        currentTime={factoryState.current_time}
+      />
+
+      {/* Main Two-Column Dashboard Layout (Gantt & Recovery/Disruption Controls) */}
       <div className="dashboard-layout">
         {/* Left Primary Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="dashboard-main-col">
           {/* Gantt Timeline */}
           <GanttChart
             machines={factoryState.machines}
             schedule={factoryState.schedule}
             currentTime={factoryState.current_time}
             activeDisruptions={factoryState.active_disruptions}
+            comparison={factoryState.comparison}
           />
 
           {/* Before-and-After KPI Comparison Matrix */}
@@ -220,19 +228,17 @@ export const App: React.FC = () => {
               status={factoryState.status}
             />
           )}
-
-          {/* Job Queue & Status View */}
-          <JobListView jobs={factoryState.jobs} schedule={factoryState.schedule} />
         </div>
 
         {/* Right Sidebar Controls */}
-        <div className="controls-sidebar">
+        <div className="dashboard-sidebar-col">
           {/* Recovery Optimizer Action Panel */}
           <RecoveryPanel
             status={factoryState.status}
-            onOptimize={() => handleOptimize()}
+            onOptimize={() => { handleOptimize(); }}
             loading={actionLoading}
             optimizerInfo={factoryState.optimizer_info}
+            comparison={factoryState.comparison}
           />
 
           {/* Disruption Simulation Controls */}
@@ -243,15 +249,11 @@ export const App: React.FC = () => {
             onTriggerDisruption={handleDisruption}
             loading={actionLoading}
           />
-
-          {/* Machine Health & Telemetry */}
-          <MachineGrid
-            machines={factoryState.machines}
-            schedule={factoryState.schedule}
-            currentTime={factoryState.current_time}
-          />
         </div>
       </div>
+
+      {/* Production Order Queue & Tracking (Full Width) */}
+      <JobListView jobs={factoryState.jobs} schedule={factoryState.schedule} />
     </div>
   );
 };

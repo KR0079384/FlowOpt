@@ -167,7 +167,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ comparison, st
             Job Rerouting & Timeline Rescheduling Adjustments ({job_shifts.length} Operations Evaluated)
           </div>
 
-          <div className="data-table-wrapper" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+          <div className="data-table-wrapper">
             <table className="data-table">
               <thead>
                 <tr>
