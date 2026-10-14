@@ -10,6 +10,7 @@ FlowOpt Root (k:\Projects\FlowOpt)
  ├── AGENTS.md                          # Mandatory operating instructions
  ├── primary.md                         # Root navigation map (this file)
  ├── README.md                          # Project documentation and demo guide
+ ├── .gitignore                         # Git tracking exclusions (Python, Node, OS, IDE)
  ├── backend/                           # Python FastAPI & Optimisation Backend
  │   ├── backend.md                     # Backend root context
  │   ├── requirements.txt               # Backend dependencies
