@@ -93,7 +93,7 @@ export const JobListView: React.FC<JobListViewProps> = ({ jobs, schedule }) => {
         </div>
       </div>
 
-      <div className="data-table-wrapper" style={{ maxHeight: '340px', overflowY: 'auto' }}>
+      <div className="data-table-wrapper">
         <table className="data-table">
           <thead>
             <tr>
