@@ -81,3 +81,41 @@ def test_completed_jobs_frozen():
     assert rec_map["JOB-101"].end_time == base_map["JOB-101"].end_time
     assert rec_map["JOB-101"].machine_id == base_map["JOB-101"].machine_id
     assert rec_map["JOB-101"].status == JobStatus.COMPLETED
+
+
+def test_material_delay_recovery_respects_release_time():
+    from backend.app.models.schemas import MaterialDelay
+
+    machines = get_default_machines()
+    jobs = get_default_jobs()
+    baseline = build_baseline_schedule(machines, jobs)
+
+    # Delay material for JOB-104 by 6 hours at T=6.0 -> release_time = 12.0
+    md = MaterialDelay(
+        job_id="JOB-104",
+        delay_hours=6.0,
+        material_name="Specialty Inconel Billets"
+    )
+    req = DisruptionRequest(current_time=6.0, material_delay=md)
+    up_machines, up_jobs, dis_schedule, _ = apply_disruption(machines, jobs, baseline, req)
+
+    rec_schedule, solver_info = run_recovery_optimization(
+        machines=up_machines,
+        jobs=up_jobs,
+        current_schedule=dis_schedule,
+        current_time=6.0,
+        material_delay=md,
+        recovery_req=RecoveryRequest(solver_timeout_seconds=5.0)
+    )
+
+    assert solver_info["status"] in ("OPTIMAL", "FEASIBLE")
+    assert solver_info["is_valid"] is True
+
+    # Check that JOB-104 starts at or after 12.0
+    rec_j104 = next(a for a in rec_schedule if a.job_id == "JOB-104")
+    assert rec_j104.start_time >= 12.0 - 1e-4
+
+    # Check constraints on entire schedule
+    is_valid, errors = validate_schedule_constraints(up_machines, up_jobs, rec_schedule)
+    assert is_valid, f"Constraint violations: {errors}"
+
